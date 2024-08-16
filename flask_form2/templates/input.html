@@ -14,11 +14,11 @@
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
                   {{ form.username.label }}<br>
-                  {{ form.username(class="form-control border border-success") }}
+                  {{ render_field(form.username, class="form-control border border-success") }}
                 </div>
                 <div class="mb-3">
                   {{ form.email.label }}<br>
-                  {{ form.email(class="form-control border border-success") }}
+                  {{ render_field(form.email, class="form-control border border-success") }}
                 </div>
                 <div class="mb-3 text-center">
                   {{ form.input(class="btn btn-primary mx-auto w-25") }}

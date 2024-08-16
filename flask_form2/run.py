@@ -2,6 +2,8 @@ from flask import Flask, render_template, session, redirect, url_for, flash
 # フォーム関係
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
+# バリテーション設定
+from wtforms.validators import DataRequired, Email
 
 app = Flask(__name__)
 
@@ -9,8 +11,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'runindex'
 
 class InputForm(FlaskForm):
-    email = StringField('メールアドレス')
-    username = StringField('名前')
+    email = StringField('メールアドレス', validators=[DataRequired(), Email(message="メールアドレスは正しい形式で入力してください")])
+    username = StringField('名前', validators=[DataRequired(message="名前を入力してください")])
     input = SubmitField('入力する')
 
 # TOPページ
@@ -20,7 +22,7 @@ def run_index():
 
 @app.route('/input', methods=['GET', 'POST'])
 def input():
-    # クラス手で定義したInputFormをインスタンス化
+    # クラスで定義したInputFormをインスタンス化
     form = InputForm()
     if form.validate_on_submit():
         # sessionにフォームから入力したデータを引き渡し
