@@ -11,9 +11,9 @@ app.config['SECRET_KEY'] = 'flaskform'
 
 class RegistrationForm(FlaskForm):
     # フォームに表示する入力項目の設定
-    email = StringField('メールアドレス',validators=[DataRequired(), Email()])
+    email = StringField('メールアドレス',validators=[DataRequired(), Email(message='正しいメールアドレスを入力してください')])
     username = StringField('ユーザーネーム', validators=[DataRequired()])
-    password = PasswordField('パスワード', validators=[DataRequired(), EqualTo('pw_config')])
+    password = PasswordField('パスワード', validators=[DataRequired(), EqualTo('pw_config', message='パスワードが一致していません')])
     pw_config = PasswordField('パスワード(確認用)', validators=[DataRequired()])
     submit = SubmitField('登録する')
 

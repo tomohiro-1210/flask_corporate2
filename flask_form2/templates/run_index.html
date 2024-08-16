@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- コンテンツ -->
+    <div class="container" style="margin-top:4rem;">
+        <h2>TOPページ</h2>
+        <div class="col-md-12 mx-auto my-5">
+
+            <!-- フォーム -->
+            <div class="row">
+              <div class="col-md-6 mx-auto mt-2">
+                <h2 class="text-center mb-3">ユーザー情報</h2>
+                <div class="text-center pt-2 pb-4">
+                  <a href="{{ url_for('input') }}" class="btn btn-primary">新規ユーザー入力</a>
+                </div>
+                <form method="POST">
+                  <div class="mb-3">
+                    <label for="username" class="form-label">ユーザーネーム</label>
+                    <input type="text" class="form-control border border-success" {% if session['username'] != "" %}value="{{ session['username'] }}"{% endif %} id="username" aria-describedby="emailHelp">
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">メールアドレス</label>
+                    <input type="email" class="form-control border border-success" {% if session['email'] != "" %}value="{{ session['email'] }}"{% endif %} id="email">
+                  </div>
+                </form>
+            </div>
+           </div>
+        </div>
+    </div>
+{% endblock content %}
