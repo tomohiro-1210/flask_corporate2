@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, session, flash
+from flask import Flask, render_template, url_for, redirect, session, flash, request
 # flask_wtfでフォーム構築、wtformsでフォームのフィールドを一括管理
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, ValidationError
@@ -128,10 +128,13 @@ def register():
         return redirect(url_for('user_maintenance'))
     return render_template('register.html', form=form)
 
+
+# ユーザー管理ページ
 @app.route('/user_maintenance')
 def user_maintenance():
+    page = request.args.get('page', 1 ,type=int)
     # usersテーブルからデータを全件取得
-    users = User.query.order_by(User.id).all()
+    users = User.query.order_by(User.id).paginate(page=page, per_page=10)
     return render_template('user_maintenance.html', users=users)
 
 

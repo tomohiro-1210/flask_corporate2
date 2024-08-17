@@ -23,7 +23,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for user in users %}
+              {% for user in users.items %}
               <tr>
                 <th scope="row">{{ user.id }}</th>
                 <td class="col-md-2">{{ user.username }}</td>
@@ -42,16 +42,26 @@
           <!-- ページャー -->
           <nav aria-label="Page navigation example">
             <ul class="pagination">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
+              <li {% if users.has_prev %} class="page-item" {% else %} class="page-item disabled" {% endif %}>
+                <a class="page-link" href=" {% if users.has_prev %} {{url_for('user_maintenance', page=users.prev_num)}} {% else %} # {% endif %}" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                 </a>
               </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
+
+              {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                  {% if users.page == page_num %}
+                    <li class="page-item disabled"><a class="page-link" href="#">{{page_num}}</a></li>
+                  {% else %}
+                    <li class="page-item"><a class="page-link" href="{{url_for('user_maintenance', page=page_num)}}">{{page_num}}</a></li>
+                  {% endif %}
+                {% else %}
+                  <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
+                {% endif %}
+              {% endfor %}
+
+              <li {% if users.has_next %} class="page-item" {% else %} class="page-item disabled" {% endif %}>
+                <a class="page-link" href=" {% if users.has_next %} {{url_for('user_maintenance', page=users.next_num)}} {% else %} # {% endif %}" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
                 </a>
               </li>
