@@ -53,7 +53,7 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                      <form action="{{url_for('delete_user', user_id=form.id)}}" method="POST">
+                      <form action="{{url_for('users.delete_user', user_id=form.id)}}" method="POST">
                         <button type="submit" class="btn btn-danger">削除する</button>
                       </form>
                     </div>

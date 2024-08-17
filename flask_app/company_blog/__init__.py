@@ -23,7 +23,7 @@ Migrate(app, db)
 # ログイン関係
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'users/login'
 
 
 def localize_callback(*args, **kwargs):
@@ -39,3 +39,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
+
+# Blueprintを読み込んで有効化する
+from company_blog.users.views import users
+from company_blog.error_pages.handlers import error_pages
+
+app.register_blueprint(users)
+app.register_blueprint(error_pages)

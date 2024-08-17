@@ -40,11 +40,11 @@
               <a class="nav-link text-white" href="#">お問い合わせ</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" href="{{url_for('user_maintenance')}}">ユーザー</a>
+              <a class="nav-link text-white" href="{{url_for('users.user_maintenance')}}">ユーザー</a>
             </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link text-white" href="{{url_for('logout')}}">ログアウト</a>
+              <a class="nav-link text-white" href="{{url_for('users.logout')}}">ログアウト</a>
             </li>
             <li class="nav-item">
               <div class="nav-link text-white" href="#" tabindex="-1" aria-disabled="true">{{ current_user.username }}</div>

@@ -8,7 +8,7 @@
 
         {% if current_user.is_administrator() %}
         <div class="text-center pt-2 pb-4">
-          <a href="{{url_for('register')}}" class="btn btn-primary">新規ユーザー登録</a>
+          <a href="{{url_for('users.register')}}" class="btn btn-primary">新規ユーザー登録</a>
         </div>
         {% endif %}
 
@@ -34,7 +34,7 @@
                 <td class="col-md-2"><a href="#">ブログ投稿数</a></td>
                 {% if current_user.is_administrator() or current_user.id == user.id %}
                 <td class="col-md-2">
-                  <a href="{{url_for('account', user_id=user.id)}}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                  <a href="{{url_for('users.account', user_id=user.id)}}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
                     変更〇
                   </a>
                 </td>
@@ -53,7 +53,7 @@
           <nav aria-label="Page navigation example">
             <ul class="pagination">
               <li {% if users.has_prev %} class="page-item" {% else %} class="page-item disabled" {% endif %}>
-                <a class="page-link" href=" {% if users.has_prev %} {{url_for('user_maintenance', page=users.prev_num)}} {% else %} # {% endif %}" aria-label="Previous">
+                <a class="page-link" href=" {% if users.has_prev %} {{url_for('users.user_maintenance', page=users.prev_num)}} {% else %} # {% endif %}" aria-label="Previous">
                   <span aria-hidden="true">&laquo;</span>
                 </a>
               </li>
@@ -63,7 +63,7 @@
                   {% if users.page == page_num %}
                     <li class="page-item disabled"><a class="page-link" href="#">{{page_num}}</a></li>
                   {% else %}
-                    <li class="page-item"><a class="page-link" href="{{url_for('user_maintenance', page=page_num)}}">{{page_num}}</a></li>
+                    <li class="page-item"><a class="page-link" href="{{url_for('users.user_maintenance', page=page_num)}}">{{page_num}}</a></li>
                   {% endif %}
                 {% else %}
                   <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
@@ -71,7 +71,7 @@
               {% endfor %}
 
               <li {% if users.has_next %} class="page-item" {% else %} class="page-item disabled" {% endif %}>
-                <a class="page-link" href=" {% if users.has_next %} {{url_for('user_maintenance', page=users.next_num)}} {% else %} # {% endif %}" aria-label="Next">
+                <a class="page-link" href=" {% if users.has_next %} {{url_for('users.user_maintenance', page=users.next_num)}} {% else %} # {% endif %}" aria-label="Next">
                   <span aria-hidden="true">&raquo;</span>
                 </a>
               </li>
