@@ -23,11 +23,13 @@ class User(db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     passsword_hash = db.Column(db.String(128))
+    administrator = db.Column(db.String(1))
 
-    def __init__(self, email, username, password_hash):
+    def __init__(self, email, username, password_hash, administrator):
         self.email = email
         self.username = username
         self.passsword_hash = password_hash
+        self.administrator = administrator
 
     def __repr__(self):
         return f"Username: {self.username}"
