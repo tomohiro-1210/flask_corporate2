@@ -31,7 +31,7 @@
                 <td class="col-md-2">{{user.administrator}}</td>
                 <td class="col-md-2"><a href="#">ブログ投稿数</a></td>
                 <td class="col-md-2">
-                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                  <a href="{{url_for('account', user_id=user.id)}}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
                     変更
                   </a>
                 </td>
