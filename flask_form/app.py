@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, session, flash
 # flask_wtfでフォーム構築、wtformsでフォームのフィールドを一括管理
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, ValidationError
 # wtforms.validatorsでバリテーションチェック
 from wtforms.validators import DataRequired, Email, EqualTo
 # DBの読み込み
@@ -92,6 +92,15 @@ class RegistrationForm(FlaskForm):
     pw_config = PasswordField('パスワード(確認用)', validators=[DataRequired()])
     submit = SubmitField('登録する')
 
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError('入力されたユーザー名は既に使われています。')
+        
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('入力されたメールアドレスは既に登録されています。')
+
+
 @app.route('/')
 def index():
     return 'TOPページ'
@@ -105,9 +114,15 @@ def register():
     if form.validate_on_submit():
 
         # セッションにデータ格納
-        session['email'] = form.email.data
-        session['username'] = form.username.data
-        session['password'] = form.password.data
+        # session['email'] = form.email.data
+        # session['username'] = form.username.data
+        # session['password'] = form.password.data
+
+        #フォームのデータをDBに格納する
+        user = User(email=form.email.data, username=form.username.data, password_hash=form.password.data, administrator="0")
+        db.session.add(user)
+        db.session.commit()
+
         # 登録後に表示するメッセージ
         flash('ユーザーが登録されました')
         return redirect(url_for('user_maintenance'))
@@ -115,7 +130,9 @@ def register():
 
 @app.route('/user_maintenance')
 def user_maintenance():
-    return render_template('user_maintenance.html')
+    # usersテーブルからデータを全件取得
+    users = User.query.order_by(User.id).all()
+    return render_template('user_maintenance.html', users=users)
 
 
 if __name__ == '__main__':
