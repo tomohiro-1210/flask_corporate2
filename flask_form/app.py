@@ -1,11 +1,11 @@
-from flask import Flask, render_template, url_for, redirect, session, flash, request
+from flask import Flask, render_template, url_for, redirect, session, flash, request, abort
 # flask_wtfでフォーム構築、wtformsでフォームのフィールドを一括管理
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, ValidationError
 # wtforms.validatorsでバリテーションチェック
 from wtforms.validators import DataRequired, Email, EqualTo
 # ログイン
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # DBの読み込み
@@ -88,6 +88,13 @@ class User(db.Model, UserMixin):
     @password.setter
     def password(self, password):
         self.passsword_hash = generate_password_hash(password)
+
+    # 管理者か一般ユーザーかの判断
+    def is_administrator(self):
+        if self.administrator == "1":
+            return 1
+        else: 
+            return 0
 
 # ブログテーブル
 class BlogPost(db.Model):
@@ -174,6 +181,8 @@ def logout():
 def register():
     # フォームを使えるようにインスタンス化
     form = RegistrationForm()
+    if not current_user.is_administrator():
+        abort(403)
     # 入力したデータをチェックする
     if form.validate_on_submit():
 
@@ -228,8 +237,10 @@ def user_maintenance():
 @login_required
 def account(user_id):
     user = User.query.get_or_404(user_id)
+    if user.id != current_user.id and not current_user.is_administrator():
+        abort(403)
     form = UpdateUserForm(user_id)
-    # 初期表示後tの処理
+    # 初期表示後の処理
     if form.validate_on_submit():
         user.username = form.username.data
         user.email = form.email.data
@@ -253,10 +264,26 @@ def account(user_id):
 @login_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
+    # 管理者権限
+    if not current_user.is_administrator():
+        abort(403)
+    if user.is_administrator():
+        flash('管理者は削除できません')
+        return redirect(url_for('account', user_id=user_id))
     db.session.delete(user)
     db.session.commit()
     flash(f'ユーザーのアカウントが削除されました。')
     return redirect(url_for('user_maintenance'))
+
+# 403ページ
+@app.errorhandler(403)
+def error_403(error):
+    return render_template('403.html'), 403
+
+# 404ページ
+@app.errorhandler(404)
+def error_404(error):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

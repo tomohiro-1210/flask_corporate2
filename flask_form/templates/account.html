@@ -32,9 +32,11 @@
                 <div class="text-center">
                     {{ form.submit(class="btn btn-primary mx-auto w-25 mb-4") }}
                   <!-- Button trigger modal -->
+                   {% if current_user.is_administrator() %}
                   <button type="button" class="btn btn-danger ml-4 mx-auto" style="display: block;" data-bs-toggle="modal" data-bs-target="#user_delete">
                     ユーザー情報を削除する
                   </button>
+                  {% endif %}
 
                 </div>
               </form><!-- Modal -->

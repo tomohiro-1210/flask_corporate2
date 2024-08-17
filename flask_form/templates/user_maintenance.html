@@ -6,9 +6,11 @@
       <div class="col-md-12 mx-auto my-5">
         <h2 class="text-primary text-center py-3">ユーザー管理画面</h2>
 
+        {% if current_user.is_administrator() %}
         <div class="text-center pt-2 pb-4">
           <a href="{{url_for('register')}}" class="btn btn-primary">新規ユーザー登録</a>
         </div>
+        {% endif %}
 
         <section class="col-md-10 mx-auto">
           <table class="table">
@@ -30,11 +32,19 @@
                 <td class="col-md-3">{{ user.email }}</td>
                 <td class="col-md-2">{{user.administrator}}</td>
                 <td class="col-md-2"><a href="#">ブログ投稿数</a></td>
+                {% if current_user.is_administrator() or current_user.id == user.id %}
                 <td class="col-md-2">
                   <a href="{{url_for('account', user_id=user.id)}}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
-                    変更
+                    変更〇
                   </a>
                 </td>
+                {% else %}
+                <td class="col-md-2">
+                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                    変更×
+                  </a>
+                </td>
+                {% endif %}
               </tr>
               {% endfor %}
             </tbody>
