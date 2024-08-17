@@ -11,6 +11,9 @@ from flask import Blueprint
 
 users = Blueprint('users', __name__)
 
+@users.route('/')
+def index():
+    return 'users'
 
 # ログインページ
 @users.route('/login', methods=['GET', 'POST'])

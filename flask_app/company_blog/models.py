@@ -20,7 +20,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True) # Integerで数値型を指定する
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    passsword_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
     administrator = db.Column(db.String(1))
     #リレーション設定
     post = db.relationship('BlogPost', backref='author', lazy='dynamic')
@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     def __init__(self, email, username, password, administrator):
         self.email = email
         self.username = username
-        self.passsword = password
+        self.password = password
         self.administrator = administrator
 
     def __repr__(self):
@@ -36,7 +36,7 @@ class User(db.Model, UserMixin):
     
     # パスワードのチェック
     def check_password(self, password):
-        return check_password_hash(self.passsword_hash, password)
+        return check_password_hash(self.password_hash, password)
     
     @property
     def password(self):
@@ -45,7 +45,7 @@ class User(db.Model, UserMixin):
     # フォームから受け取ったパスワードのハッシュ化処理をする。そして上のpassword_hashに戻っていくのか？
     @password.setter
     def password(self, password):
-        self.passsword_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password)
 
     # 管理者か一般ユーザーかの判断
     def is_administrator(self):
