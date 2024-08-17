@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'appdb'
 
-basedir = os.path.abspath(os.path.dirname(___file__))
-app.config['SQLARCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-app.config['SQLARChEMY_TRACK_MODIFICATIONS'] = False #dbの変更履歴無効
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #dbの変更履歴無効
 
 db = SQLAlchemy(app) #DBの生成？？
 
