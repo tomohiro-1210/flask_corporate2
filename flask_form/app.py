@@ -5,8 +5,8 @@ from wtforms import StringField, PasswordField, SubmitField, ValidationError
 # wtforms.validatorsでバリテーションチェック
 from wtforms.validators import DataRequired, Email, EqualTo
 # ログイン
-from flask_login import LoginManager, UserMixin, login_user
-from werkzeug.security import check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from werkzeug.security import check_password_hash, generate_password_hash
 
 # DBの読み込み
 import os 
@@ -29,10 +29,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #dbの変更履歴無効
 # dbの作成
 db = SQLAlchemy(app) #DBの生成？？
 Migrate(app, db)
+
 # ログイン関係
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+def localize_callback(*args, **kwargs):
+    return 'このページにアクセスするには、ログインが必要です。'
+login_manager.localize_callback = localize_callback
 
 
 #外部キーの設定
@@ -62,10 +67,10 @@ class User(db.Model, UserMixin):
     #リレーション設定
     post = db.relationship('BlogPost', backref='author', lazy='dynamic')
 
-    def __init__(self, email, username, password_hash, administrator):
+    def __init__(self, email, username, password, administrator):
         self.email = email
         self.username = username
-        self.passsword_hash = password_hash
+        self.passsword = password
         self.administrator = administrator
 
     def __repr__(self):
@@ -74,6 +79,15 @@ class User(db.Model, UserMixin):
     # パスワードのチェック
     def check_password(self, password):
         return check_password_hash(self.passsword_hash, password)
+    
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+    
+    # フォームから受け取ったパスワードのハッシュ化処理をする。そして上のpassword_hashに戻っていくのか？
+    @password.setter
+    def password(self, password):
+        self.passsword_hash = generate_password_hash(password)
 
 # ブログテーブル
 class BlogPost(db.Model):
@@ -109,8 +123,8 @@ class RegistrationForm(FlaskForm):
     # フォームに表示する入力項目の設定
     email = StringField('メールアドレス',validators=[DataRequired(), Email(message='正しいメールアドレスを入力してください')])
     username = StringField('ユーザーネーム', validators=[DataRequired()])
-    password = PasswordField('パスワード', validators=[DataRequired(), EqualTo('pw_config', message='パスワードが一致していません')])
-    pw_config = PasswordField('パスワード(確認用)', validators=[DataRequired()])
+    password = PasswordField('パスワード', validators=[DataRequired(), EqualTo('password_confirm', message='パスワードが一致していません')])
+    password_confirm = PasswordField('パスワード(確認用)', validators=[DataRequired()])
     submit = SubmitField('登録する')
 
     def validate_username(self, field):
@@ -148,8 +162,15 @@ def login():
 
     return render_template('login.html', form=form)
 
+# ログアウト
+@app.route('/logput')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
 #View関数
 @app.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
     # フォームを使えるようにインスタンス化
     form = RegistrationForm()
@@ -162,7 +183,7 @@ def register():
         # session['password'] = form.password.data
 
         #フォームのデータをDBに格納する
-        user = User(email=form.email.data, username=form.username.data, password_hash=form.password.data, administrator="0")
+        user = User(email=form.email.data, username=form.username.data, password=form.password.data, administrator="0")
         db.session.add(user)
         db.session.commit()
 
@@ -195,6 +216,7 @@ class UpdateUserForm(FlaskForm):
 
 # ユーザー管理ページ
 @app.route('/user_maintenance')
+@login_required
 def user_maintenance():
     page = request.args.get('page', 1 ,type=int)
     # usersテーブルからデータを全件取得
@@ -203,6 +225,7 @@ def user_maintenance():
 
 # ユーザー更新ページ
 @app.route('/<int:user_id>/account', methods=['GET', 'POST'])
+@login_required
 def account(user_id):
     user = User.query.get_or_404(user_id)
     form = UpdateUserForm(user_id)
@@ -212,7 +235,7 @@ def account(user_id):
         user.email = form.email.data
         
         if form.password.data:
-            user.password_hash = form.password.data
+            user.password = form.password.data
             
         db.session.commit()
         flash('ユーザーアカウントが更新されました。')
@@ -227,6 +250,7 @@ def account(user_id):
 
 # ユーザーデータ削除
 @app.route('/<int:user_id>/delete', methods=['GET', 'POST'])
+@login_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
