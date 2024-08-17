@@ -4,6 +4,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, ValidationError
 # wtforms.validatorsでバリテーションチェック
 from wtforms.validators import DataRequired, Email, EqualTo
+# ログイン
+from flask_login import LoginManager, UserMixin, login_user
+from werkzeug.security import check_password_hash
+
 # DBの読み込み
 import os 
 from flask import Flask
@@ -25,6 +29,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #dbの変更履歴無効
 # dbの作成
 db = SQLAlchemy(app) #DBの生成？？
 Migrate(app, db)
+# ログイン関係
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
 #外部キーの設定
@@ -37,8 +45,12 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
 # Userモデル、テーブル
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     # dbのテーブルを定義
@@ -58,6 +70,10 @@ class User(db.Model):
 
     def __repr__(self):
         return f"Username: {self.username}"
+    
+    # パスワードのチェック
+    def check_password(self, password):
+        return check_password_hash(self.passsword_hash, password)
 
 # ブログテーブル
 class BlogPost(db.Model):
@@ -82,6 +98,11 @@ class BlogPost(db.Model):
     def __repr__(self):
         return f'postID: {self.id}, Title: {self.title}, Author: {self.author} \n'
 
+#ログインフォーム
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email(message="正しいメールアドレスを入力してください")])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('ログイン')
 
 # 登録フォーム
 class RegistrationForm(FlaskForm):
@@ -104,6 +125,28 @@ class RegistrationForm(FlaskForm):
 @app.route('/')
 def index():
     return 'TOPページ'
+
+# ログインページ
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    # 入力された内容に問題がないかを見る
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None:
+            if user.check_password(form.password.data):
+                login_user(user)
+                next = request.args.get('next')
+                if next == None  or not next[0] ==  '/':
+                    next = url_for('user_maintenance')
+                return redirect(next)
+
+            else:
+                flash('パスワードが一致しません')
+        else:
+            flash('入力されたユーザーは存在しません')
+
+    return render_template('login.html', form=form)
 
 #View関数
 @app.route('/register', methods=['GET', 'POST'])
