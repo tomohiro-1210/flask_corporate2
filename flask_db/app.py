@@ -19,6 +19,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #dbの変更履歴無効
 db = SQLAlchemy(app) #DBの生成？？
 Migrate(app, db)
 
+#外部キーの設定
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
 # テーブルの定義
 class User(db.Model):
     __tablename__ = 'users'
@@ -29,6 +40,8 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     passsword_hash = db.Column(db.String(128))
     administrator = db.Column(db.String(1))
+    #リレーション設定
+    post = db.relationship('BlogPost', backref='author', lazy='dynamic')
 
     def __init__(self, email, username, password_hash, administrator):
         self.email = email
@@ -41,11 +54,11 @@ class User(db.Model):
 
 # ブログテーブル
 class BlogPost(db.Model):
-    __tablename_ = 'blog_post'
+    __tablename__ = 'blog_post'
 
     # テーブルの設定
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     date = db.Column(db.DateTime, default=datetime.now(timezone('Asia/tokyo')))
     title = db.Column(db.String(140))
     text = db.Column(db.Text)
@@ -60,7 +73,7 @@ class BlogPost(db.Model):
         self.summary = summary
 
     def __repr__(self):
-        return f'postID: {self.id}, Title: {self.title}'
+        return f'postID: {self.id}, Title: {self.title}, Author: {self.author} \n'
 
 if __name__ == '__main__':
     app.run(debug=True)
