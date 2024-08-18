@@ -1,8 +1,10 @@
 # フォーム関係読み込み
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, ValidationError
+from wtforms import StringField, SubmitField, ValidationError, TextAreaField, SelectField
 from wtforms.validators import DataRequired
 from company_blog.models import BlogCategory
+#ファイル読み込み関係
+from flask_wtf.file import FileField, FileAllowed
 
 # カテゴリーフォーム
 class BlogCategoryForm(FlaskForm):
@@ -25,3 +27,22 @@ class UpdateCategoryForm(FlaskForm):
     def validate_category(self, field):
         if BlogCategory.query.filter_by(category=field.data).first():
             raise ValidationError('入力されたカテゴリー名は既に使われております。')
+        
+# ブログ投稿フォーム
+class BlogPostForm(FlaskForm):
+    title = StringField('タイトル', validators=[DataRequired()])
+    category = SelectField('カテゴリー', coerce=int)
+    summary = StringField('要約', validators=[DataRequired()])
+    text = TextAreaField('本文', validators=[DataRequired()])
+    picture = FileField('アイキャッチ画像', validators=[FileAllowed(['jpg', 'png', 'gif', 'mp3'])])
+    submit = SubmitField('投稿')
+
+    def _set_category(self):
+        blog_categories = BlogCategory.query.all()
+        # 内包表記、リストの中にタプルがたくさん入っている。
+        self.category.choices = [(blog_category.id, blog_category.category) for blog_category in blog_categories] 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._set_category()
+
