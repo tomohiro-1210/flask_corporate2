@@ -34,13 +34,13 @@
                 <td class="col-md-2"><a href="#">ブログ投稿数</a></td>
                 {% if current_user.is_administrator() or current_user.id == user.id %}
                 <td class="col-md-2">
-                  <a href="{{url_for('users.account', user_id=user.id)}}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                  <a href="{{url_for('users.account', user_id=user.id)}}" class="btn btn-success">
                     変更〇
                   </a>
                 </td>
                 {% else %}
                 <td class="col-md-2">
-                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                  <a href="#" class="btn btn-success">
                     変更×
                   </a>
                 </td>
