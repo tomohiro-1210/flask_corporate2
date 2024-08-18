@@ -48,7 +48,7 @@
                   </a>
                 </li>
   
-                {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% for page_num in blog_categories.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
                   {% if page_num %}
                     {% if blog_categories.page == page_num %}
                       <li class="page-item disabled"><a class="page-link" href="#">{{page_num}}</a></li>
@@ -83,7 +83,7 @@
           <form method="POST">
             {{ form.hidden_tag() }}
             <div class="modal-body">
-              {{ from.category.label(class="from-control-label") }}<br>
+              {{ form.category.label(class="from-control-label") }}<br>
               {{ form.category(class="form-control") }}
             </div>
             <div class="modal-footer">
