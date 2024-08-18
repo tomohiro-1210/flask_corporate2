@@ -61,18 +61,53 @@ class BlogPost(db.Model):
     # テーブルの設定
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('blog_category.id'))
     date = db.Column(db.DateTime, default=datetime.now(timezone('Asia/tokyo')))
     title = db.Column(db.String(140))
     text = db.Column(db.Text)
     summary = db.Column(db.String(140))
     featured_image = db.Column(db.String(140))
 
-    def __init__(self, user_id, title, text, summary, featured_image):
+    def __init__(self, user_id, title, text, summary, featured_image, category_id):
         self.title = title
         self.text = text
         self.featured_image = featured_image
         self.user_id = user_id
+        self.category_id = category_id
         self.summary = summary
 
     def __repr__(self):
         return f'postID: {self.id}, Title: {self.title}, Author: {self.author} \n'
+
+# ブログカテゴリ
+class BlogCategory(db.Model):
+    __tablename__ = 'blog_category'
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(140))
+    # BlogPostとリレーションシップ
+    posts = db.relationship('BlogPost', backref='blogcategory', lazy='dynamic')
+
+    def __init__(self, category):
+        self.category = category
+
+    def __repr__(self):
+        return f'CategoryID: {self.id}, CategoryName: {self.category} \n'
+    
+# お問い合わせフォーム
+class Inquiry(db.Model):
+    __tablename__ = 'inquiry'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
+    title = db.Column(db.String(140))
+    text = db.Column(db.Text)
+    date = db.Column(db.DateTime, default=datetime.now(timezone('Asia/Tokyo')))
+
+    def __init__(self, name, email, title, text):
+        self.name = name
+        self.email = email
+        self.title = title
+        self.text = text
+
+    def __repr__(self):
+        return f'InquiryID: {self.id}, Name: {self.name}, Text: {self.text} \n'

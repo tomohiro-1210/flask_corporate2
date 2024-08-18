@@ -43,6 +43,8 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 # Blueprintを読み込んで有効化する
 from company_blog.users.views import users
 from company_blog.error_pages.handlers import error_pages
+from company_blog.main.views import main
 
 app.register_blueprint(users)
 app.register_blueprint(error_pages)
+app.register_blueprint(main)
