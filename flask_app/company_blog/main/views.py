@@ -77,5 +77,13 @@ def create_post():
         db.session.add(blog_post)
         db.session.commit()
         flash('ブログが投稿されました。')
-        return redirect(url_for('main.category_maintenance'))
+        return redirect(url_for('main.blog_maintenance'))
     return render_template('create_post.html', form=form)
+
+# ブログ管理ページ
+@main.route('/blog_maintenance')
+@login_required
+def blog_maintenance():
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
+    return render_template('blog_maintenance.html', blog_posts=blog_posts)
