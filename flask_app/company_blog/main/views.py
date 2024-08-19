@@ -87,3 +87,9 @@ def blog_maintenance():
     page = request.args.get('page', 1, type=int)
     blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
     return render_template('blog_maintenance.html', blog_posts=blog_posts)
+
+# ブログ詳細
+@main.route('/<int:blog_post_id>/blog_post')
+def blog_post(blog_post_id):
+    blog_post = BlogPost.query.get_or_404(blog_post_id)
+    return render_template('blog_post.html', post=blog_post)

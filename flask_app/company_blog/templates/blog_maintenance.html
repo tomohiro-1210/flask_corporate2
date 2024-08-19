@@ -30,7 +30,7 @@
                 <td class="col-md-2">{{ post.date.strftime('%Y-%m-%d') }}</td>
                 <td class="col-md-2">{{ post.author.username }}</td>
                 <td class="col-md-2">
-                  <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                  <a href="{{ url_for('main.blog_post', blog_post_id=post.id) }}" class="btn btn-success" >
                     ポスト詳細
                   </a>
                 </td>
