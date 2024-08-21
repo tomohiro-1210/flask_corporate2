@@ -33,21 +33,25 @@
                      </section>
 
                     <!-- 記事関連のボタン -->
-                    <div class="text-center bg-light mt-3 p-3">
+                    <div class="row text-center bg-light mt-3 p-3">
                         {% if current_user.is_active %}
                           {% if post.author == current_user %}
-                          <button type="button" class="btn btn-success" style="display: inline-block; margin-right: 0.5rem;">
-                          記事を更新
-                          </button>
+                          <div class="col-md-2">
+                            <a href="{{ url_for('main.update_blog', blog_post_id=post.id) }}" class="btn btn-success" style="display: inline-block;">記事を更新</a>
+                          </div>
                           <!-- 削除モーダルトリガー -->
-                          <button type="button" class="btn btn-danger" style="display: inline-block; margin-right: 0.5rem;" data-bs-toggle="modal" data-bs-target="#blog_delete">
-                          記事を削除
-                          </button>
+                          <div class="col-md-2">
+                            <button type="button" class="btn btn-danger" style="display: inline-block;" data-bs-toggle="modal" data-bs-target="#blog_delete">
+                            記事を削除
+                            </button>
+                          </div>
                           {% endif %}
                         {% endif %}
-                        <button type="button" class="btn btn-secondary" style="display: inline-block; margin-right: 0.5rem;" onclick="history.back()">
-                        戻る
-                        </button>
+                        <div class="col-md-2">
+                          <button type="button" class="btn btn-secondary" style="display: inline-block;" onclick="history.back()">
+                          戻る
+                          </button>
+                        </div>
                     </div>
                  </div>
                  <!-- サイドバー -->
@@ -116,8 +120,8 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                      <form action="./acount.html" method="POST">
-                        <button type="button" class="btn btn-danger">削除する</button>
+                      <form action="{{ url_for('main.blog_delete', blog_post_id=post.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">削除する</button>
                       </form>
                     </div>
                   </div>

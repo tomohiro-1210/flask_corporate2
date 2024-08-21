@@ -1,11 +1,28 @@
 from flask import Blueprint, render_template ,request, url_for, redirect, flash, abort
 from flask_login import login_required, current_user
 from company_blog.models import BlogCategory, BlogPost
-from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm
+from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm, BlogSearchForm
 from company_blog import db
 from company_blog.main.image_handler import add_featured_image
 
 main = Blueprint('main', __name__)
+
+# TOPページ
+@main.route('/')
+def index():
+    form = BlogSearchForm()
+    # ブログ記事の取得
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
+
+    # 最新記事の取得
+    recent_blog_post = BlogPost.query.order_by(BlogPost.id.desc()).limit(5).all()
+
+    # カテゴリーの取得
+    blog_categories = BlogCategory.query.order_by(BlogCategory.id.asc()).all()
+
+    return render_template('index.html', blog_posts=blog_posts, recent_blog_post=recent_blog_post, blog_categories=blog_categories, form=form)
+
 
 # カテゴリー一覧
 @main.route('/category_maintenance', methods=['GET', 'POST'])
@@ -93,3 +110,42 @@ def blog_maintenance():
 def blog_post(blog_post_id):
     blog_post = BlogPost.query.get_or_404(blog_post_id)
     return render_template('blog_post.html', post=blog_post)
+
+# ブログの削除機能
+@main.route('/<int:blog_post_id>/blog_delete', methods=['GET', 'POST'])
+@login_required
+def blog_delete(blog_post_id):
+    blog_post = BlogPost.query.get_or_404(blog_post_id)
+    if blog_post.author != current_user:
+        abort(403)
+    db.session.delete(blog_post)
+    db.session.commit()
+    return redirect(url_for('main.blog_maintenance'))
+
+# ブログ更新
+@main.route('/<int:blog_post_id>/update_blog', methods=['GET', 'POST'])
+@login_required
+def update_blog(blog_post_id):
+    blog_post = BlogPost.query.get_or_404(blog_post_id)
+    if blog_post.author != current_user:
+        abort(403)
+    form = BlogPostForm()
+    if form.validate_on_submit():
+        blog_post.title = form.title.data
+        if form.picture.data:
+            blog_post.featured_image = add_featured_image(form.picture.data)
+        blog_post.text = form.text.data
+        blog_post.summary = form.summary.data
+        blog_post.category_id = form.category.data
+        db.session.commit()
+        flash('ブログ投稿が更新されました')
+        return redirect(url_for('main.blog_post', blog_post_id=blog_post.id))
+    elif request.method == 'GET':
+        form.title.data = blog_post.title
+        form.picture.data = blog_post.featured_image
+        form.text.data = blog_post.text
+        form.summary.data = blog_post.summary
+        form.category.data = blog_post.category_id
+    return render_template('create_post.html', form=form)
+
+
