@@ -213,3 +213,11 @@ def inquiry():
         flash('お問い合わせが送信されました')
         return redirect(url_for('main.inquiry'))
     return render_template('inquiry.html', form = form)
+
+# お問い合わせ管理画面
+@main.route('/inquiry_maintenance', methods=['GET', 'POST'])
+@login_required
+def inquiry_maintenance():
+    page = request.args.get('page', 1, type=int)
+    inquiries = Inquiry.query.order_by(Inquiry.id.desc()).paginate(page=page, per_page=10)
+    return render_template('inquiry_maintenance.html', inquiries=inquiries)
