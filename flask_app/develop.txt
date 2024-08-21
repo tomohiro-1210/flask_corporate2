@@ -1,0 +1,4 @@
+開発メモ
+・index.htmlの検索結果が出ない
+・ブログカテゴリー管理ページの下記コードが機能しない
+                <!-- <td class="col-md-3"><a href="{{ url_for('main.category_posts', blog_category_id=blog_category.id) }}">{{ blog_category.count_posts(blog_category.id) }}</a></td> -->

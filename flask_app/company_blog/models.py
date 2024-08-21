@@ -53,6 +53,10 @@ class User(db.Model, UserMixin):
             return 1
         else: 
             return 0
+        
+    # 投稿数カウント
+    def count_posts(self, user_id):
+        return BlogPost.query.filter_by(user_id=user_id).count()
 
 # ブログテーブル
 class BlogPost(db.Model):
@@ -92,6 +96,9 @@ class BlogCategory(db.Model):
 
     def __repr__(self):
         return f'CategoryID: {self.id}, CategoryName: {self.category} \n'
+    
+    def count_posts(self, id):
+        return BlogPost.query.filter_by(category_id=id).count()
     
 # お問い合わせフォーム
 class Inquiry(db.Model):

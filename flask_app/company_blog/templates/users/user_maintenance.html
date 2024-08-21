@@ -31,7 +31,7 @@
                 <td class="col-md-2">{{ user.username }}</td>
                 <td class="col-md-3">{{ user.email }}</td>
                 <td class="col-md-2">{{user.administrator}}</td>
-                <td class="col-md-2"><a href="#">ブログ投稿数</a></td>
+                <td class="col-md-2"><a href="{{ url_for('users.user_posts', user_id=user.id) }}">{{ user.count_posts(user.id) }}</a></td>
                 {% if current_user.is_administrator() or current_user.id == user.id %}
                 <td class="col-md-2">
                   <a href="{{url_for('users.account', user_id=user.id)}}" class="btn btn-success">

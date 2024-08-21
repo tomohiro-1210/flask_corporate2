@@ -27,7 +27,8 @@
               <tr>
                 <th scope="col-md-2">{{blog_category.id}}</th>
                 <td class="col-md-4">{{blog_category.category}}</td>
-                <td class="col-md-3"><a href="#">ブログ投稿数</a></td>
+                <!-- 下記コードのhref=""が機能しない -->
+                <td class="col-md-3"><a href="#">{{ blog_category.count_posts(blog_category.id) }}</a></td>
                 <td class="col-md-3">
                   {% if current_user.is_administrator() %}
                   <a href="{{ url_for('main.blog_category', blog_category_id=blog_category.id) }}" class="btn btn-success">
