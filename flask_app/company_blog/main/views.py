@@ -233,3 +233,15 @@ def display_inquiry(inquiry_id):
     form.title.data = inquiry.title
     form.text.data = inquiry.text
     return render_template('inquiry.html', form=form, inquiry_id=inquiry_id)
+
+# お問い合わせデータ削除
+@main.route('/<int:inquiry_id>/delete_inquiry', methods=['GET', 'POST'])
+@login_required
+def delete_inquiry(inquiry_id):
+    inquiries = Inquiry.query.get_or_404(inquiry_id)
+    if not current_user.is_administrator():
+        abort(403)
+    db.session.delete(inquiries)
+    db.session.commit()
+    flash('お問い合わせが削除されました')
+    return redirect(url_for('main.inquiry_maintenance'))
