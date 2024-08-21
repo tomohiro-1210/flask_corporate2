@@ -221,3 +221,15 @@ def inquiry_maintenance():
     page = request.args.get('page', 1, type=int)
     inquiries = Inquiry.query.order_by(Inquiry.id.desc()).paginate(page=page, per_page=10)
     return render_template('inquiry_maintenance.html', inquiries=inquiries)
+
+# お問い合わせ詳細画面
+@main.route('/<int:inquiry_id>/display_inquiry')
+@login_required
+def display_inquiry(inquiry_id):
+    inquiry = Inquiry.query.get_or_404(inquiry_id)
+    form = InquiryForm()
+    form.name.data = inquiry.name
+    form.email.data = inquiry.email
+    form.title.data = inquiry.title
+    form.text.data = inquiry.text
+    return render_template('inquiry.html', form=form, inquiry_id=inquiry_id)

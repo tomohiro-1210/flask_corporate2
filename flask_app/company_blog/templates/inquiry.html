@@ -8,34 +8,75 @@
           <!-- フォーム -->
           <div class="row" id="inquiry">
             <div class="col-md-6 mx-auto mt-2">
-              <h2 class="text-center mb-3">お問い合わせフォーム</h2>
-              <p class="text-center">弊社へのお問い合わせ、ご連絡はこちらよりお願いします。</p>
+              {% if inquiry_id %}
+                <h2 class="text-center mb-3">お問い合わせ詳細</h2>
+              {% else %}
+                <h2 class="text-center mb-3">お問い合わせフォーム</h2>
+                <p class="text-center">弊社へのお問い合わせ、ご連絡はこちらよりお願いします。</p>
+              {% endif %}
               <form method="POST">
-                {{ form.hidden_tag() }}
-                <div class="mb-3">
-                  <div class="form-lavels"><span class="required">必須</span>{{ form.name.label }}</div>
-                  {{ render_field(form.name, class="form-control border border-dark ") }}
-                </div>
-                <div class="mb-3">
-                  <div class="form-lavels"><span class="required">必須</span>{{ form.email.label }}</div>
-                  {{ render_field(form.email, class="form-control border border-dark ") }}
-                </div>
-                <div class="mb-3">
-                  <div class="form-lavels"><span class="required">必須</span>{{ form.title.label }}</div>
-                  {{ render_field(form.title, class="form-control border border-dark ") }}
-                </div>
-                <div class="mb-3">
-                  <div class="form-lavels"><span class="required">必須</span>{{ form.text.label }}</div>
-                  {{ render_field(form.text, class="form-control border border-dark ") }}
-                </div>
-                <div class="text-center">
-                  {{ form.submit(class="btn btn-primary mb-2 w-25") }}
-                </div>
+                {% if inquiry_id %}
+                <fieldset disabled>
+                {% endif %}
+                  {{ form.hidden_tag() }}
+                  <div class="mb-3">
+                    <div class="form-lavels"><span class="required">必須</span>{{ form.name.label }}</div>
+                    {{ render_field(form.name, class="form-control border border-dark ") }}
+                  </div>
+                  <div class="mb-3">
+                    <div class="form-lavels"><span class="required">必須</span>{{ form.email.label }}</div>
+                    {{ render_field(form.email, class="form-control border border-dark ") }}
+                  </div>
+                  <div class="mb-3">
+                    <div class="form-lavels"><span class="required">必須</span>{{ form.title.label }}</div>
+                    {{ render_field(form.title, class="form-control border border-dark ") }}
+                  </div>
+                  <div class="mb-3">
+                    <div class="form-lavels"><span class="required">必須</span>{{ form.text.label }}</div>
+                    {{ render_field(form.text, class="form-control border border-dark ") }}
+                  </div>
+                  <div class="text-center">
+                    {% if not inquiry_id %}
+                    {{ form.submit(class="btn btn-primary mb-2 w-25") }}
+                    {% endif %}
+                  </div>
+                {% if inquiry_id %}
+                </fieldset>
+                  {% if current_user.is_administrator() %}
+                    <div class="col-md-3">
+                      <button type="button" class="btn btn-danger" style="display: block;" data-bs-toggle="modal" data-bs-target="#del_modal">
+                        削除する
+                      </button>
+                    </div>
+                  {% endif %}
+                {% endif %}
               </form>
           </div>
          </div>
       </div>
     </div>
+    {% if inquiry_id %}
+    <!-- Modal -->
+    <div class="modal fade" id="del_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">お問い合わせ情報の削除</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            このお問い合わせ情報を削除しますか？
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            <form action="#" method="POST">
+              <button type="submit" class="btn btn-danger">削除する</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
     <style>
         .form-lavels{
           margin-bottom: 5px;

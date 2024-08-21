@@ -29,8 +29,8 @@
                 <td class="col-md-3">{{ inquiry.text | truncate(100) }}</td>
                 <td class="col-md-2">{{ inquiry.date.strftime('%Y/%m/%d') }}</td>
                 <td class="col-md-1">
-                    <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
-                      変更
+                    <a href="{{ url_for('main.display_inquiry', inquiry_id=inquiry.id) }}" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_delete">
+                      詳細
                     </a>
                 </td>
               </tr>
