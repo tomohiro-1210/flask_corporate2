@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template ,request, url_for, redirect, flash, abort
 from flask_login import login_required, current_user
-from company_blog.models import BlogCategory, BlogPost
-from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm, BlogSearchForm
+from company_blog.models import BlogCategory, BlogPost, Inquiry
+from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm, BlogSearchForm, InquiryForm
 from company_blog import db
 from company_blog.main.image_handler import add_featured_image
 
@@ -200,3 +200,16 @@ def category_posts(id):
     blog_categories = BlogCategory.query.order_by(BlogCategory.id.asc()).all()
 
     return render_template('index.html', blog_posts=blog_posts, recent_blog_post=recent_blog_post, blog_categories=blog_categories, id=id, form=form)
+
+# お問い合わせフォーム
+@main.route('/inquiry', methods=['GET', 'POST'])
+def inquiry():
+    form = InquiryForm()
+
+    if form.validate_on_submit():
+        inquiry = Inquiry(name=form.name.data, email=form.email.data, title=form.title.data, text=form.text.data)
+        db.session.add(inquiry)
+        db.session.commit()
+        flash('お問い合わせが送信されました')
+        return redirect(url_for('main.inquiry'))
+    return render_template('inquiry.html', form = form)

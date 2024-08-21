@@ -1,7 +1,7 @@
 # フォーム関係読み込み
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, ValidationError, TextAreaField, SelectField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from company_blog.models import BlogCategory
 #ファイル読み込み関係
 from flask_wtf.file import FileField, FileAllowed
@@ -47,9 +47,14 @@ class BlogPostForm(FlaskForm):
         self._set_category()
 
 # ブログ記事検索フォーム
-
 class BlogSearchForm(FlaskForm):
     searchtext = StringField('検索テキスト', validators=[DataRequired()])
     submit = SubmitField('検索')
 
-
+# お問い合わせフォーム
+class InquiryForm(FlaskForm):
+    name = StringField('お名前', validators=[DataRequired()])
+    email = StringField('メールアドレス', validators=[DataRequired(), Email(message="正しいメールアドレスを入力してください")])
+    title = StringField('題名', validators=[DataRequired()])
+    text = TextAreaField('メッセージ本文', validators=[DataRequired()])
+    submit = SubmitField('送信')

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- コンテンツ -->
+    <div class="container" style="margin-top:4rem;">
+      <div class="col-md-12 mx-auto my-5">
+
+          <!-- フォーム -->
+          <div class="row" id="inquiry">
+            <div class="col-md-6 mx-auto mt-2">
+              <h2 class="text-center mb-3">お問い合わせフォーム</h2>
+              <p class="text-center">弊社へのお問い合わせ、ご連絡はこちらよりお願いします。</p>
+              <form method="POST">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                  <div class="form-lavels"><span class="required">必須</span>{{ form.name.label }}</div>
+                  {{ render_field(form.name, class="form-control border border-dark ") }}
+                </div>
+                <div class="mb-3">
+                  <div class="form-lavels"><span class="required">必須</span>{{ form.email.label }}</div>
+                  {{ render_field(form.email, class="form-control border border-dark ") }}
+                </div>
+                <div class="mb-3">
+                  <div class="form-lavels"><span class="required">必須</span>{{ form.title.label }}</div>
+                  {{ render_field(form.title, class="form-control border border-dark ") }}
+                </div>
+                <div class="mb-3">
+                  <div class="form-lavels"><span class="required">必須</span>{{ form.text.label }}</div>
+                  {{ render_field(form.text, class="form-control border border-dark ") }}
+                </div>
+                <div class="text-center">
+                  {{ form.submit(class="btn btn-primary mb-2 w-25") }}
+                </div>
+              </form>
+          </div>
+         </div>
+      </div>
+    </div>
+    <style>
+        .form-lavels{
+          margin-bottom: 5px;
+        }
+        .required{
+            background-color: red;
+            color: white;
+            padding: 3px 6px;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+        .mb-3 textarea{
+            height: 140px;
+            
+        }
+    </style>
+    {% endblock content %}
