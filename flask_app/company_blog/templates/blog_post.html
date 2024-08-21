@@ -59,10 +59,11 @@
                     <div class="position-sticky" style="top: 2rem;">
                         <!-- 検索 -->
                          <div class="container-fruid mb-3">
-                            <form action="#" method="POST" class="d-flex">
-                                <input type="text" class="form-control me-2" placeholder="検索するテキストを入力">
-                                <button class="btn-btn-outline-success" type="submit">検索</button>
-                            </form>
+                          <form action="{{ url_for('main.search') }}" method="POST" class="d-flex">
+                              {{ form.hidden_tag() }}
+                              {{ render_field(form.searchtext, class="form-control me-2", placeholder="検索するテキストを入力") }}
+                              {{ form.submit(class="btn-btn-outline-success") }}
+                          </form>
                          </div>
 
                         <!-- 会社情報 -->
@@ -76,27 +77,36 @@
                             <h4 class="fst-italic">RECENT POST <span class="ms-2 fs-6">最新記事</span></h4>
                             <hr>
                             <ol class="list-unstyled">
+                              {% for recent_post in recent_blog_posts %}
                                 <li>
-                                    <a href="" class="text-decoration-none text-dark">
-                                        <img src="../flask_app/company_blog/static/featured_image/スクリーンショット 2024-02-13 131239.png" class="img-fluid" width="90" height="50">
-                                        <span class="ms-2">タイトル</span>
+                                    <a href="{{ url_for('main.blog_post', blog_post_id=post.id) }}" class="text-decoration-none text-dark">
+                                        {% if recent_post.featured_image %}
+                                        <img src="{{ url_for('static', filename='featured_image/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">
+                                        {% else %}
+                                        <div style="width: 90px; height: 50px; background-color: #999; display: inline-block;" class="img-fluid"></div>
+  
+                                        {% endif %}
+                                        <span class="ms-2">{{ recent_post.title }}</span>
                                     </a>
                                     <hr>
                                 </li>
+                              {% endfor %}
                             </ol>
                         </div>
 
                         <!-- カテゴリー -->
                         <div class="p-4 bg-light">
-                            <h4 class="fst-italic">RCATEGORY <span class="ms-2 fs-6">カテゴリー一覧</span></h4>
+                            <h4 class="fst-italic">CATEGORY <span class="ms-2 fs-6">カテゴリー一覧</span></h4>
                             <hr>
                             <ol class="list-unstyled">
+                              {% for blog_category in blog_categories %}
                                 <li>
-                                    <a href="" class="text-decoration-none text-dark">
-                                        <span class="ms-2">カテゴリー</span>
+                                    <a href="{{ url_for('main.category_posts', id=blog_category.id) }}" class="text-decoration-none text-dark">
+                                        <span class="ms-2">{{ blog_category.category }}</span>
                                     </a>
                                     <hr>
                                 </li>
+                              {% endfor %}
                             </ol>
                         </div>
                         

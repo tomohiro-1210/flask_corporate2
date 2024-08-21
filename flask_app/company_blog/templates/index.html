@@ -9,9 +9,17 @@
           <div class="container my-3 bg-light">
             <div class="row">
               <div class="column-md-6 m-auto text-center">
-                <h1 class="fst-italic">Hoshitetsu Company</h1>
-                <div style="border-bottom: 1px solid #999; width: 50%; margin: 0 auto;" class="my-3"></div>
-                <p>ほしてつがFlaskとHTML/CSS/Bootstrapで作成したテストサイト</p>
+                {% if blog_category %}
+                  <h1 class="fst-italic">"{{ blog_category }}"の検索結果</h1>
+                  <div style="border-bottom: 1px solid #999; width: 50%; margin: 0 auto;" class="my-3"></div>
+                {% elif searchtext %}
+                  <h1 class="fst-italic">"{{ searchtext }}"の検索結果</h1>
+                  <div style="border-bottom: 1px solid #999; width: 50%; margin: 0 auto;" class="my-3"></div>
+                {% else %}
+                  <h1 class="fst-italic">Hoshitetsu Company</h1>
+                  <div style="border-bottom: 1px solid #999; width: 50%; margin: 0 auto;" class="my-3"></div>
+                  <p>ほしてつがFlaskとHTML/CSS/Bootstrapで作成したテストサイト</p>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -54,8 +62,8 @@
                   <div class="position-sticky" style="top: 2rem;">
                       <!-- 検索 -->
                        <div class="container-fruid mb-3">
-                          <form action="#" method="POST" class="d-flex">
-                            {{ form.hidden_tag() }}
+                          <form action="{{ url_for('main.search') }}" method="POST" class="d-flex">
+                              {{ form.hidden_tag() }}
                               {{ render_field(form.searchtext, class="form-control me-2", placeholder="検索するテキストを入力") }}
                               {{ form.submit(class="btn-btn-outline-success") }}
                           </form>
@@ -74,7 +82,7 @@
                           <ol class="list-unstyled">
                             {% for recent_post in recent_blog_posts %}
                               <li>
-                                  <a href="{{ url_for('main.blog_post', blog_post_id=post.id) }}" class="text-decoration-none text-dark">
+                                  <a href="{{ url_for('main.blog_post', blog_post_id=recent_post.id) }}" class="text-decoration-none text-dark">
                                       {% if recent_post.featured_image %}
                                       <img src="{{ url_for('static', filename='featured_image/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">
                                       {% else %}
@@ -94,9 +102,9 @@
                           <h4 class="fst-italic">CATEGORY <span class="ms-2 fs-6">カテゴリー一覧</span></h4>
                           <hr>
                           <ol class="list-unstyled">
-                            {% for blog_category in blgo_categories %}
+                            {% for blog_category in blog_categories %}
                               <li>
-                                  <a href="" class="text-decoration-none text-dark">
+                                  <a href="{{ url_for('main.category_posts', id=blog_category.id) }}" class="text-decoration-none text-dark">
                                       <span class="ms-2">{{ blog_category.category }}</span>
                                   </a>
                                   <hr>
